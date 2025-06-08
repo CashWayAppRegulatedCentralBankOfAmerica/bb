@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Deriv Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DerivClone - Login / Signup</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-white text-gray-800 font-sans">
+  <body class="bg-white text-gray-800 font-sans min-h-screen flex flex-col">
 
     <!-- Navbar -->
     <header class="w-full px-6 py-4 flex justify-between items-center shadow-md">
@@ -18,73 +18,161 @@
         <a href="#" class="hover:text-red-600">Company</a>
         <a href="#" class="hover:text-red-600">Help</a>
       </nav>
-      <div class="space-x-3">
-        <button class="px-4 py-2 text-sm border rounded hover:bg-gray-100">Log in</button>
-        <button class="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700">Sign up</button>
+      <div class="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0">
+        <button id="login-btn" class="w-full sm:w-auto px-4 py-2 text-sm border rounded hover:bg-gray-100">
+          Log in
+        </button>
+        <button id="signup-btn" class="w-full sm:w-auto px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+          Sign up
+        </button>
       </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="px-6 py-20 text-center bg-gray-100">
-      <h1 class="text-4xl md:text-5xl font-bold mb-4">Trade with confidence on DerivClone</h1>
-      <p class="text-lg text-gray-600 mb-6 max-w-xl mx-auto">
-        Access forex, synthetic indices, and more with a powerful platform built for modern traders.
-      </p>
-      <button class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700">Create free account</button>
-    </section>
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center px-6 py-12">
+      <div class="max-w-md w-full bg-gray-50 p-8 rounded-lg shadow-lg">
 
-    <!-- Features -->
-    <section class="px-6 py-16">
-      <h2 class="text-3xl font-bold text-center mb-12">What you can trade</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <div class="bg-white shadow p-6 rounded-lg">
-          <h3 class="text-xl font-semibold mb-2">Forex</h3>
-          <p class="text-gray-600">Trade the world’s most liquid market with tight spreads and leverage.</p>
+        <!-- Tabs -->
+        <div class="flex mb-6">
+          <button id="tab-login" class="flex-1 py-2 border-b-2 border-red-600 font-semibold text-red-600">
+            Log In
+          </button>
+          <button id="tab-signup" class="flex-1 py-2 border-b-2 border-transparent hover:border-red-600 font-semibold text-gray-600 hover:text-red-600">
+            Sign Up
+          </button>
         </div>
-        <div class="bg-white shadow p-6 rounded-lg">
-          <h3 class="text-xl font-semibold mb-2">Synthetic Indices</h3>
-          <p class="text-gray-600">24/7 synthetic markets that simulate real-world volatility.</p>
-        </div>
-        <div class="bg-white shadow p-6 rounded-lg">
-          <h3 class="text-xl font-semibold mb-2">Cryptocurrencies</h3>
-          <p class="text-gray-600">Go long or short on crypto markets with a simple interface.</p>
-        </div>
-      </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white px-6 py-10">
-      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div>
-          <h4 class="font-bold mb-3">DerivClone</h4>
-          <p class="text-sm text-gray-400">A frontend-only UI demo inspired by Deriv.com</p>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-2">Products</h4>
-          <ul class="text-sm space-y-1">
-            <li><a href="#" class="hover:underline">Forex</a></li>
-            <li><a href="#" class="hover:underline">Synthetic Indices</a></li>
-            <li><a href="#" class="hover:underline">Crypto</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-2">Company</h4>
-          <ul class="text-sm space-y-1">
-            <li><a href="#" class="hover:underline">About us</a></li>
-            <li><a href="#" class="hover:underline">Careers</a></li>
-            <li><a href="#" class="hover:underline">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-2">Legal</h4>
-          <ul class="text-sm space-y-1">
-            <li><a href="#" class="hover:underline">Terms</a></li>
-            <li><a href="#" class="hover:underline">Privacy</a></li>
-            <li><a href="#" class="hover:underline">Security</a></li>
-          </ul>
-        </div>
+        <!-- Forms -->
+        <form id="login-form">
+          <div class="mb-4">
+            <label for="login-email" class="block mb-1 font-semibold">Email</label>
+            <input
+              type="email"
+              id="login-email"
+              required
+              class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-600"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div class="mb-6">
+            <label for="login-password" class="block mb-1 font-semibold">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              required
+              class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-600"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-3 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition"
+          >
+            Log In
+          </button>
+        </form>
+
+        <form id="signup-form" class="hidden">
+          <div class="mb-4">
+            <label for="signup-name" class="block mb-1 font-semibold">Full Name</label>
+            <input
+              type="text"
+              id="signup-name"
+              required
+              class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-600"
+              placeholder="John Doe"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="signup-email" class="block mb-1 font-semibold">Email</label>
+            <input
+              type="email"
+              id="signup-email"
+              required
+              class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-600"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div class="mb-6">
+            <label for="signup-password" class="block mb-1 font-semibold">Password</label>
+            <input
+              type="password"
+              id="signup-password"
+              required
+              class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-600"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-3 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition"
+          >
+            Create Account
+          </button>
+        </form>
+
       </div>
-      <div class="text-center text-gray-500 text-sm mt-10">&copy; 2025 DerivClone. All rights reserved.</div>
-    </footer>
+    </main>
+
+    <script>
+      // Toggle tabs and forms
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+
+      tabLogin.addEventListener('click', () => {
+        tabLogin.classList.add('border-red-600', 'text-red-600');
+        tabLogin.classList.remove('border-transparent', 'text-gray-600');
+        tabSignup.classList.remove('border-red-600', 'text-red-600');
+        tabSignup.classList.add('border-transparent', 'text-gray-600');
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+      });
+
+      tabSignup.addEventListener('click', () => {
+        tabSignup.classList.add('border-red-600', 'text-red-600');
+        tabSignup.classList.remove('border-transparent', 'text-gray-600');
+        tabLogin.classList.remove('border-red-600', 'text-red-600');
+        tabLogin.classList.add('border-transparent', 'text-gray-600');
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+      });
+
+      // Placeholder auth logic
+      loginForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        // Simple localStorage user lookup (demo only)
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (users[email] && users[email].password === password) {
+          alert(`Welcome back, ${users[email].name}!`);
+          localStorage.setItem('currentUser', JSON.stringify(users[email]));
+          window.location.href = 'dashboard.html';
+        } else {
+          alert('Invalid email or password');
+        }
+      });
+
+      signupForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (users[email]) {
+          alert('Email already registered');
+          return;
+        }
+        users[email] = { name, email, password };
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Account created! Please log in.');
+        tabLogin.click(); // Switch to login tab
+      });
+    </script>
+
   </body>
 </html>
