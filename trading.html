@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trading | DerivClone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    /* Simple fade in animation for open trades */
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Mobile nav -->
+  <nav class="bg-red-600 text-white p-4 flex justify-between items-center shadow-lg">
+    <h1 class="text-xl font-bold">DerivClone</h1>
+    <div class="space-x-4">
+      <a href="dashboard.html" class="hover:underline">Dashboard</a>
+      <a href="trading.html" class="underline font-semibold">Trading</a>
+      <a href="auth.html" id="logout-link" class="hover:underline">Logout</a>
+    </div>
+  </nav>
+
+  <main class="flex-1 max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Market Prices -->
+    <section class="bg-white rounded-xl shadow p-4 md:col-span-1">
+      <h2 class="text-lg font-semibold mb-4">Live Market Prices</h2>
+      <ul id="market-prices" class="space-y-2 text-gray-800">
+        <!-- Prices inserted here -->
+      </ul>
+    </section>
+
+    <!-- TradingView Chart -->
+    <section class="bg-white rounded-xl shadow p-4 md:col-span-2">
+      <h2 class="text-lg font-semibold mb-4">EUR/USD Chart</h2>
+      <div id="tv_chart" style="height: 400px;"></div>
+    </section>
+
+    <!-- Open Trade Form -->
+    <section class="bg-white rounded-xl shadow p-4 md:col-span-1">
+      <h2 class="text-lg font-semibold mb-4">Open Trade</h2>
+      <form id="trade-form" class="space-y-4">
+        <label class="block">
+          <span class="font-semibold">Symbol</span>
+          <select id="trade-symbol" class="w-full p-2 border rounded" required>
+            <option value="EURUSD">EUR/USD</option>
+            <option value="GBPUSD">GBP/USD</option>
+            <option value="USDJPY">USD/JPY</option>
+            <option value="BTCUSD">BTC/USD</option>
+          </select>
+        </label>
+
+        <label class="block">
+          <span class="font-semibold">Amount (USD)</span>
+          <input type="number" id="trade-amount" min="1" class="w-full p-2 border rounded" required />
+        </label>
+
+        <label class="block">
+          <span class="font-semibold">Direction</span>
+          <select id="trade-direction" class="w-full p-2 border rounded" required>
+            <option value="buy">Buy (Long)</option>
+            <option value="sell">Sell (Short)</option>
+          </select>
+        </label>
+
+        <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition">
+          Open Trade
+        </button>
+      </form>
+    </section>
+
+    <!-- Open Trades List -->
+    <section class="bg-white rounded-xl shadow p-4 md:col-span-2">
+      <h2 class="text-lg font-semibold mb-4">Open Trades</h2>
+      <ul id="open-trades" class="space-y-3 text-gray-900 min-h-[150px]">
+        <!-- Open trades will appear here -->
+      </ul>
+    </section>
+  </main>
+
+  <!-- TradingView Widget -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
+
+  <script>
+    // Check user logged in or redirect
+    if (!localStorage.getItem('loggedInUser')) {
+      location.href = 'auth.html';
+    }
+
+    // TradingView Chart
+    new TradingView.widget({
+      container_id: "tv_chart",
+      autosize: true,
+      symbol: "FX:EURUSD",
+      interval: "15",
+      timezone: "Etc/UTC",
+      theme: "light",
+      style: "1",
+      locale: "en",
+      toolbar_bg: "#f1f3f6",
+      enable_publishing: false,
+      allow_symbol_change: true,
+      details: true,
+      hotlist: true,
+      calendar: true,
+      studies: ["MACD@tv-basicstudies"],
+    });
+
+    // Simulated live prices (you can later replace with real API)
+    const symbols = {
+      EURUSD: { price: 1.1032 },
+      GBPUSD: { price: 1.2534 },
+      USDJPY: { price: 134.67 },
+      BTCUSD: { price: 28000 }
+    };
+
+    const marketPricesEl = document.getElementById('market-prices');
+
+    function updatePrices() {
+      marketPricesEl.innerHTML = '';
+      Object.entries(symbols).forEach(([sym, data]) => {
+        // Simulate random price movement +/- 0.0005 or 0.05 for BTC/USD
+        const change = (sym === "BTCUSD" ? (Math.random() - 0.5) * 10 : (Math.random() - 0.5) * 0.001).toFixed(5);
+        data.price = parseFloat((data.price + parseFloat(change)).toFixed(5));
+        const li = document.createElement('li');
+        li.className = "flex justify-between font-mono";
+        li.innerHTML = `<span>${sym}</span><span>${data.price.toFixed(5)}</span>`;
+        marketPricesEl.appendChild(li);
+      });
+    }
+
+    // Initial and interval update
+    updatePrices();
+    setInterval(updatePrices, 4000);
+
+    // Open Trades Logic
+    const tradeForm = document.getElementById('trade-form');
+    const openTradesEl = document.getElementById('open-trades');
+
+    function getOpenTrades() {
+      return JSON.parse(localStorage.getItem('openTrades')) || [];
+    }
+
+    function saveOpenTrades(trades) {
+      localStorage.setItem('openTrades', JSON.stringify(trades));
+    }
+
+    function calculatePnL(trade) {
+      // Simplified PnL: (currentPrice - openPrice) * amount for Buy, inverse for Sell
+      const currentPrice = symbols[trade.symbol]?.price || trade.openPrice;
+      let pnl = 0;
+      if (trade.direction === 'buy') {
+        pnl = (currentPrice - trade.openPrice) * trade.amount * 1000; // leverage factor
+      } else {
+        pnl = (trade.openPrice - currentPrice) * trade.amount * 1000;
+      }
+      return pnl.toFixed(2);
+    }
+
+    function renderOpenTrades() {
+      const trades = getOpenTrades();
+      openTradesEl.innerHTML = trades.length
+        ? ''
+        : '<li class="text-gray-500 italic">No open trades</li>';
+
+      trades.forEach((trade, i) => {
+        const pnl = calculatePnL(trade);
+        const li = document.createElement('li');
+        li.className = `fade-in p-3 border rounded flex justify-between items-center ${
+          pnl >= 0 ? 'text-green-700' : 'text-red-700'
+        }`;
+        li.innerHTML = `
+          <div>
+            <div><strong>${trade.symbol}</strong> - ${trade.direction.toUpperCase()}</div>
+            <div class="text-sm">Amount: $${trade.amount}</div>
+            <div class="text-sm">Open Price: ${trade.openPrice.toFixed(5)}</div>
+          </div>
+          <div>
+            P&L: $${pnl}
+            <button data-index="${i}" class="ml-4 bg-gray-200 px-2 rounded hover:bg-gray-300 text-sm">Close</button>
+          </div>
+        `;
+        openTradesEl.appendChild(li);
+
+        // Close button event
+        li.querySelector('button').addEventListener('click', () => {
+          const trades = getOpenTrades();
+          trades.splice(i, 1);
+          saveOpenTrades(trades);
+          renderOpenTrades();
+        });
+      });
+    }
+
+    // On open trade form submit
+    tradeForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const symbol = document.getElementById('trade-symbol').value;
+      const amount = parseFloat(document.getElementById('trade-amount').value);
+      const direction = document.getElementById('trade-direction').value;
+      const openPrice = symbols[symbol]?.price || 0;
+
+      if (amount <= 0) {
+        alert("Enter a valid amount.");
+        return;
+      }
+
+      const trades = getOpenTrades();
+      trades.push({ symbol, amount, direction, openPrice, openedAt: Date.now() });
+      saveOpenTrades(trades);
+      renderOpenTrades();
+      tradeForm.reset();
+    });
+
+    // Initial render
+    renderOpenTrades();
+
+    // Logout link
+    document.getElementById('logout-link').addEventListener('click', e => {
+      e.preventDefault();
+      localStorage.removeItem('loggedInUser');
+      localStorage.removeItem('openTrades');
+      location.href = 'auth.html';
+    });
+  </script>
+</body>
+</html>
