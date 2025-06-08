@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | DerivClone</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="w-full max-w-md bg-white p-6 rounded-xl shadow-xl">
+    <h2 id="form-title" class="text-2xl font-bold mb-4 text-center">Sign In</h2>
+
+    <!-- FORM -->
+    <form id="auth-form" class="space-y-4">
+      <input id="username" type="text" placeholder="Username" class="w-full p-3 border rounded" required />
+      <input id="password" type="password" placeholder="Password" class="w-full p-3 border rounded" required />
+      <button id="submit-btn" type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded">Sign In</button>
+    </form>
+
+    <!-- TOGGLE -->
+    <p class="text-center mt-4 text-sm text-gray-600">
+      <span id="toggle-text">Don't have an account?</span>
+      <button id="toggle-btn" class="text-red-600 font-semibold hover:underline">Sign Up</button>
+    </p>
+
+    <!-- FEEDBACK -->
+    <div id="feedback" class="text-center text-sm mt-3 text-red-500 hidden"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('auth-form');
+    const title = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const toggleText = document.getElementById('toggle-text');
+    const feedback = document.getElementById('feedback');
+
+    let isLogin = true;
+
+    // Toggle form
+    toggleBtn.onclick = () => {
+      isLogin = !isLogin;
+      title.textContent = isLogin ? "Sign In" : "Sign Up";
+      submitBtn.textContent = isLogin ? "Sign In" : "Sign Up";
+      toggleText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
+      toggleBtn.textContent = isLogin ? "Sign Up" : "Sign In";
+      feedback.classList.add("hidden");
+    };
+
+    // Store users in localStorage
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('users')) || [];
+    }
+
+    function saveUser(user) {
+      const users = getUsers();
+      users.push(user);
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function findUser(username, password) {
+      return getUsers().find(u => u.username === username && u.password === password);
+    }
+
+    // Handle form submit
+    form.onsubmit = e => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (isLogin) {
+        const user = findUser(username, password);
+        if (user) {
+          localStorage.setItem('loggedInUser', JSON.stringify(user));
+          location.href = "dashboard.html"; // Redirect after login
+        } else {
+          feedback.textContent = "Invalid username or password.";
+          feedback.classList.remove("hidden");
+        }
+      } else {
+        const users = getUsers();
+        if (users.some(u => u.username === username)) {
+          feedback.textContent = "Username already exists.";
+          feedback.classList.remove("hidden");
+        } else {
+          saveUser({ username, password });
+          feedback.textContent = "Registration successful. You can now sign in.";
+          feedback.classList.remove("hidden");
+        }
+      }
+    };
+  </script>
+</body>
+</html>
